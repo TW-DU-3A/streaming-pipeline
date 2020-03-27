@@ -25,6 +25,12 @@ $zk_command create /tw/stationDataSF/topic station_data_sf
 $zk_command create /tw/stationDataSF/checkpointLocation hdfs://$hdfs_server/tw/rawData/stationDataSF/checkpoints
 $zk_command create /tw/stationDataSF/dataLocation hdfs://$hdfs_server/tw/rawData/stationDataSF/data
 
+$zk_command create /tw/stationDataFR ''
+$zk_command create /tw/stationDataFR/kafkaBrokers $kafka_server
+$zk_command create /tw/stationDataFR/topic station_data_fr
+$zk_command create /tw/stationDataFR/checkpointLocation hdfs://$hdfs_server/tw/rawData/stationDataFR/checkpoints
+$zk_command create /tw/stationDataFR/dataLocation hdfs://$hdfs_server/tw/rawData/stationDataFR/data
+
 $zk_command create /tw/output ''
 $zk_command create /tw/output/checkpointLocation hdfs://$hdfs_server/tw/stationMart/checkpoints
 $zk_command create /tw/output/dataLocation hdfs://$hdfs_server/tw/stationMart/data
