@@ -48,6 +48,10 @@ tasks.jacocoTestCoverageVerification {
     }
 }
 
-test.finalizedBy jacocoTestReport
+jacocoTestReport {
+    finalizedBy jacocoTestCoverageVerification
+}
 
-check.dependsOn jacocoTestCoverageVerification
+test {
+    finalizedBy jacocoTestReport
+}
