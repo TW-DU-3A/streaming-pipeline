@@ -6,7 +6,7 @@ import org.apache.spark.sql.streaming.DataStreamWriter
 
 object StationLocationUtils {
 
-  implicit class DataFramePayload(data: DataFrame) {
+  implicit class StationLocationDataFrame(data: DataFrame) {
 
     def addPayload(): DataFrame = {
       data
