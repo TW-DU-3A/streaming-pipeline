@@ -136,6 +136,7 @@ services:
       - webserver
     ports:
       - "587:587"
+
     environment:
       - EXECUTOR=Local
       - AIRFLOW__CORE__FERNET_KEY=1uU2E6EgdCmdHKebTZjQYvhCzqv8Q597vULxXJy-blE=
@@ -143,6 +144,7 @@ services:
 
     volumes:
       - ${PWD}/airflow/dags:/usr/local/airflow/dags
+
     env_file:
       - config.env
 
