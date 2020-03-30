@@ -1,9 +1,10 @@
 package com.tw.apps
 
-import org.apache.spark.sql.SparkSession
+import com.tw.apps.StationLocationUtils._
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
-import org.apache.spark.sql.functions._
+import org.apache.spark.sql.SparkSession
+
 
 object StationLocationApp {
   def main(args: Array[String]): Unit = {
@@ -42,10 +43,9 @@ object StationLocationApp {
       .option("startingOffsets", "latest")
       .option("failOnDataLoss", false)
       .load()
-      .selectExpr("CAST(value AS STRING) as raw_payload")
-      .withColumn("date", date_format(current_date(), "yyyy-MM-dd"))
+      .addPayload()
       .writeStream
-      .partitionBy("date")
+      .partitionByDate()
       .outputMode("append")
       .format("parquet")
       .option("checkpointLocation", checkpointLocation)
