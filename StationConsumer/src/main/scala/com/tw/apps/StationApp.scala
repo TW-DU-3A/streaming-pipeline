@@ -7,6 +7,17 @@ import org.apache.spark.sql.SparkSession
 
 object StationApp {
 
+  def getDataFromKafka(spark: SparkSession, stationKafkaBrokers: String, stationTopic: String ) = {
+    spark.readStream
+        .format("kafka")
+        .option("kafka.bootstrap.servers", stationKafkaBrokers)
+        .option("subscribe", stationTopic)
+        .option("startingOffsets", "latest")
+        .load()
+        .selectExpr("CAST(value AS STRING) as raw_payload")
+
+  }
+
   def main(args: Array[String]): Unit = {
 
     val zookeeperConnectionString = if (args.isEmpty) "zookeeper:2181" else args(0)
@@ -34,23 +45,11 @@ object StationApp {
 
     import spark.implicits._
 
-    val nycStationDF = spark.readStream
-      .format("kafka")
-      .option("kafka.bootstrap.servers", stationKafkaBrokers)
-      .option("subscribe", nycStationTopic)
-      .option("startingOffsets", "latest")
-      .load()
-      .selectExpr("CAST(value AS STRING) as raw_payload")
+    val nycStationDF = getDataFromKafka(spark, stationKafkaBrokers, nycStationTopic)
       .transform(nycStationStatusJson2DF(_, spark))
 
-    val sfStationDF = spark.readStream
-      .format("kafka")
-      .option("kafka.bootstrap.servers", stationKafkaBrokers)
-      .option("subscribe", sfStationTopic)
-      .option("startingOffsets", "latest")
-      .load()
-      .selectExpr("CAST(value AS STRING) as raw_payload")
-      .transform(sfStationStatusJson2DF(_, spark))
+    val sfStationDF = getDataFromKafka(spark, stationKafkaBrokers, sfStationTopic)
+        .transform(sfStationStatusJson2DF(_, spark))
 
     nycStationDF
       .union(sfStationDF)
