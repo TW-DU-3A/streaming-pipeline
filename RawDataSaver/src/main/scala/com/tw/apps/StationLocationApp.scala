@@ -4,7 +4,7 @@ import com.tw.apps.StationLocationUtils._
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
 import org.apache.spark.sql.SparkSession
-
+import org.apache.spark.sql.streaming.DataStreamReader
 
 object StationLocationApp {
   def main(args: Array[String]): Unit = {
@@ -36,20 +36,33 @@ object StationLocationApp {
       .appName("RawDataSaver")
       .getOrCreate()
 
-    val savedStream = spark.readStream
-      .format("kafka")
-      .option("kafka.bootstrap.servers", kafkaBrokers)
-      .option("subscribe", topic)
-      .option("startingOffsets", "latest")
-      .option("failOnDataLoss", false)
+    val readerStreamOptions = Map(
+      ("kafka.bootstrap.servers", kafkaBrokers),
+      ("subscribe", topic),
+      ("startingOffsets", "latest"),
+      ("failOnDataLoss", "false")
+    )
+    val writerOptions = Map(
+      ("checkpointLocation", checkpointLocation),
+      ("path", dataLocation)
+    )
+
+    run(spark.readStream, "kafka", "append", "parquet", readerStreamOptions, writerOptions)
+  }
+
+  def run(sourceStream: DataStreamReader,
+          sourceFormat: String,
+          outputMode: String,
+          outputFormat: String,
+          readerStreamOptions: Map[String, String],
+          writerOptions: Map[String, String]): Unit = {
+    sourceStream
+      .createSource(sourceFormat, readerStreamOptions)
       .load()
       .addPayload()
       .writeStream
       .partitionByDate()
-      .outputMode("append")
-      .format("parquet")
-      .option("checkpointLocation", checkpointLocation)
-      .option("path", dataLocation)
+      .createSink(outputMode, outputFormat, writerOptions)
       .start()
       .awaitTermination()
   }
