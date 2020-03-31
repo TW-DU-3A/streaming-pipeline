@@ -47,7 +47,7 @@ class StationLocationUtilsTest extends FeatureSpec with GivenWhenThen with Match
       val checkpoint = rootDirectory.toAbsolutePath.toString + "/checkpoint"
 
       When("when partitioned")
-      val df = input.toDF().addPayload()
+      input.toDF().addPayload()
         .writeStream
         .partitionByDate()
         .outputMode("append")
@@ -57,11 +57,9 @@ class StationLocationUtilsTest extends FeatureSpec with GivenWhenThen with Match
         .start()
         .processAllAvailable()
 
-      val partitionCount = spark.read.parquet(data).rdd.getNumPartitions
 
-      Then("the number of partitions returned should be")
-
-      partitionCount should be equals 1
+      Then("should return correct number of partitions")
+      spark.read.parquet(data).rdd.getNumPartitions should be equals 1
     }
 
     scenario("test data with multiple partitions") {
@@ -78,7 +76,7 @@ class StationLocationUtilsTest extends FeatureSpec with GivenWhenThen with Match
       val inputStream = recordFrame.toDS().toDF("value", "date")
 
       When("when partitioned")
-      val df = inputStream
+      inputStream
         .writeStream
         .partitionByDate()
         .outputMode("append")
@@ -88,11 +86,9 @@ class StationLocationUtilsTest extends FeatureSpec with GivenWhenThen with Match
         .start()
         .processAllAvailable()
 
-      val partitionCount = spark.read.parquet(data).rdd.getNumPartitions
 
       Then("the number of partitions returned should be")
-
-      partitionCount should be equals 2
+      spark.read.parquet(data).rdd.getNumPartitions should be equals 2
     }
   }
 }
