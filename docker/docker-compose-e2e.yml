@@ -61,21 +61,6 @@ services:
     networks:
       - streaming-data-internal
 
-  raw-station-data-san-francisco-saver:
-    build:
-      context: ../RawDataSaver
-      dockerfile: Dockerfile-station-data-SF
-    depends_on:
-      - kafka
-      - station-san-francisco-producer
-      - hadoop-seed
-      - zookeeper-seed
-    volumes:
-      - ~/.ivy2:/root/.ivy2:rw
-    networks:
-      - streaming-data-internal
-    restart: on-failure
-
   station-consumer:
     build:
       context: ../StationConsumer
@@ -90,32 +75,18 @@ services:
       - streaming-data-internal
     restart: on-failure
 
-  postgres:
-    container_name: "postgres"
-    image: postgres:9.6
-    volumes:
-      - ${PWD}/postgres_mount/postgres:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
-    env_file: config.env
 
   webserver:
     container_name: "webserver"
-    image: puckel/docker-airflow:1.10.4
+    build:
+      context: ../docker/airflow/
     restart: always
-    depends_on:
-      - postgres
     environment:
-      - EXECUTOR=Local
+      - EXECUTOR=Sequential
       - AIRFLOW__CORE__FERNET_KEY=1uU2E6EgdCmdHKebTZjQYvhCzqv8Q597vULxXJy-blE=
       - FERNET_KEY=1uU2E6EgdCmdHKebTZjQYvhCzqv8Q597vULxXJy-blE=
-
-    command: "webserver"
-
     volumes:
-      - ${PWD}/airflow/dags:/usr/local/airflow/dags
+        - ${PWD}/airflow/dags:/usr/local/airflow/dags
     ports:
       - "8090:8080"
       - "588:587"
@@ -129,25 +100,7 @@ services:
       - config.env
 
 
-  scheduler:
-    container_name: "scheduler"
-    image: puckel/docker-airflow:1.10.4
-    restart: always
-    depends_on:
-      - webserver
-    ports:
-      - "587:587"
 
-    environment:
-      - EXECUTOR=Local
-      - AIRFLOW__CORE__FERNET_KEY=1uU2E6EgdCmdHKebTZjQYvhCzqv8Q597vULxXJy-blE=
-      - FERNET_KEY=1uU2E6EgdCmdHKebTZjQYvhCzqv8Q597vULxXJy-blE=
-
-    volumes:
-      - ${PWD}/airflow/dags:/usr/local/airflow/dags
-
-    env_file:
-      - config.env
 
 networks:
   streaming-data-internal:
