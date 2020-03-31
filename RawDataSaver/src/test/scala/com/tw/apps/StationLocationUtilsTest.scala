@@ -2,19 +2,11 @@ package com.tw.apps
 
 import java.nio.file.Files
 
+import com.tw.DefaultFeatureSpecWithSpark
 import com.tw.apps.StationLocationUtils._
-import org.apache.spark.sql.SparkSession
-import org.scalatest.{FeatureSpec, GivenWhenThen, Matchers}
 import org.apache.spark.sql.streaming.Trigger
-//import org.mockito.Mockito
-//import org.mockito.Mockito.verify
 
-class StationLocationUtilsTest extends FeatureSpec with GivenWhenThen with Matchers {
-  val spark: SparkSession = SparkSession.builder
-    .appName("Spark Test App")
-    .config("spark.driver.host", "127.0.0.1")
-    .master("local")
-    .getOrCreate()
+class StationLocationUtilsTest extends DefaultFeatureSpecWithSpark {
 
   import spark.implicits._
 
@@ -42,7 +34,7 @@ class StationLocationUtilsTest extends FeatureSpec with GivenWhenThen with Match
       import org.apache.spark.sql.execution.streaming.MemoryStream
 
       Given("multiple records of data with two dates")
-      val stream = new MemoryStream[(String, String)](1, spark.sqlContext)
+      val stream: MemoryStream[(String, String)] = new MemoryStream[(String, String)](1, spark.sqlContext)
       stream.addData(("acid", "2020-03-30"), ("base", "2020-03-31"), ("properties", "2020-03-31"))
       val writeStream = stream.toDS().toDF("value", "date").writeStream
 
@@ -68,21 +60,4 @@ class StationLocationUtilsTest extends FeatureSpec with GivenWhenThen with Match
       assert(spark.read.parquet(data + "/date=2020-03-31").rdd.getNumPartitions === 1)
     }
   }
-
-//  feature("StationLocationReader") {
-//      scenario("creating a stream reader") {
-//        Given("some stream")
-//        val stream = Mockito.mock(classOf[DataFrameReader])
-//
-//        When("when partitioned")
-//        val options = Map(("1", "2"), ("3", "4"))
-//        val format = "dummyFormat"
-//        stream.createSource(format, options)
-//
-//        Then("the number of partitions returned should be")
-//
-//        verify(stream).format(format)
-//        verify(stream).options(options)
-//      }
-//    }
 }

@@ -3,10 +3,11 @@ package com.tw.apps
 import com.tw.apps.StationLocationUtils._
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
-import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.streaming.DataStreamReader
+import org.apache.spark.sql.{Row, SparkSession}
+import org.apache.spark.sql.streaming.{DataStreamReader, DataStreamWriter, StreamingQuery}
 
 object StationLocationApp {
+
   def main(args: Array[String]): Unit = {
 
     val retryPolicy = new ExponentialBackoffRetry(1000, 3)
@@ -15,7 +16,6 @@ object StationLocationApp {
       throw new IllegalArgumentException(message)
     }
     val zookeeperConnectionString = args(0)
-
     val zookeeperFolder = args(1)
 
     val zkClient = CuratorFrameworkFactory.newClient(zookeeperConnectionString, retryPolicy)
@@ -47,7 +47,10 @@ object StationLocationApp {
       ("path", dataLocation)
     )
 
-    run(spark.readStream, "kafka", "append", "parquet", readerStreamOptions, writerOptions)
+    val stream: DataStreamReader = spark.readStream
+    run(stream, "kafka", "append", "parquet", readerStreamOptions, writerOptions)
+      .start()
+      .awaitTermination()
   }
 
   def run(sourceStream: DataStreamReader,
@@ -55,7 +58,7 @@ object StationLocationApp {
           outputMode: String,
           outputFormat: String,
           readerStreamOptions: Map[String, String],
-          writerOptions: Map[String, String]): Unit = {
+          writerOptions: Map[String, String]): DataStreamWriter[Row] = {
     sourceStream
       .createSource(sourceFormat, readerStreamOptions)
       .load()
@@ -63,7 +66,5 @@ object StationLocationApp {
       .writeStream
       .partitionByDate()
       .createSink(outputMode, outputFormat, writerOptions)
-      .start()
-      .awaitTermination()
   }
 }
