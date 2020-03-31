@@ -21,5 +21,3 @@ dag = DAG(DAG_ID, default_args=default_args, schedule_interval=None,
           start_date=(datetime(2020, 3, 16, 0, 0, 0, 0)), catchup=False)
 
 mock_data_api = PythonOperator(task_id="mock_data_api", python_callable=mock_data_api.api_server, dag=dag)
-
-

@@ -54,7 +54,7 @@ services:
   station-san-francisco-producer:
     build:
       context: ../CitibikeApiProducer
-      dockerfile: Dockerfile-station-san-francisco
+      dockerfile: Dockerfile-station-san-francisco-e2e
     depends_on:
       - kafka
       - zookeeper-seed
@@ -119,6 +119,7 @@ services:
     ports:
       - "8090:8080"
       - "588:587"
+      - "5000:5000"
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
