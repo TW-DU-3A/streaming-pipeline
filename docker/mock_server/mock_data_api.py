@@ -6,7 +6,7 @@ from flask import jsonify
 from flask import Flask
 
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
+BASE_DIR = Path(__file__).resolve(strict=True).parent
 FILE_PATH = os.path.join(os.path.join(BASE_DIR, "resources"), "sf-mock-response.json")
 app = Flask(__name__)
 
@@ -15,3 +15,7 @@ def mock_data():
     with open(FILE_PATH) as file:
         data = json.load(file)
         return jsonify(data)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", debug=True)

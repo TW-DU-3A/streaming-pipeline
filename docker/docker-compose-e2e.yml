@@ -64,6 +64,7 @@ services:
         - kafka
         - zookeeper-seed
         - webserver
+        - mock-server
       networks:
         - streaming-data-internal
       mem_limit: 700m  #700mb
@@ -82,6 +83,17 @@ services:
       - streaming-data-internal
     restart: on-failure
     mem_limit: 700m  #700mb
+
+
+  mock-server:
+    container_name: "mock-server"
+    build:
+      context: ../docker/mock_server/
+    restart: always
+    ports:
+      - "5000:5000"
+    networks:
+      - streaming-data-internal
 
   webserver:
     container_name: "webserver"
