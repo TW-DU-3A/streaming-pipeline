@@ -74,7 +74,7 @@ services:
     depends_on:
       - zookeeper-seed
       - kafka
-      - station-san-francisco-producer
+      - station-sfo-test-producer
     volumes:
       - ~/.ivy2:/root/.ivy2:rw
     command: ["./wait-for.sh", "zookeeper:2181", "-t", "30"]

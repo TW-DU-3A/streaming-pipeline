@@ -5451,7 +5451,7 @@
         "id": "2613bd4884bb78d12ed5ec7d34391cf9",
         "latitude": 37.77865,
         "longitude": -122.41823,
-        "name": "San Francisco City Hall (Polk St at Grove St)",
+        "name": "Test San Francisco City Hall (Polk St at Grove St)",
         "timestamp": "2020-03-30T05:28:36.460000Z"
       },
       {
@@ -5467,7 +5467,7 @@
         "id": "7a31faa7a4b712a08ff9616353d7a5b9",
         "latitude": 37.7787677,
         "longitude": -122.4159292,
-        "name": "San Francisco Public Library (Grove St at Hyde St)",
+        "name": "Test San Francisco Public Library (Grove St at Hyde St)",
         "timestamp": "2020-03-30T05:28:36.469000Z"
       },
       {
@@ -5483,7 +5483,7 @@
         "id": "af4396b1135d5fcea488cfd3aba87c9a",
         "latitude": 37.78127,
         "longitude": -122.41874,
-        "name": "Golden Gate Ave at Polk St",
+        "name": "Test Golden Gate Ave at Polk St",
         "timestamp": "2020-03-30T05:28:36.470000Z"
       },
       {
@@ -5499,7 +5499,7 @@
         "id": "3df46ea4730fd2f6a4f92007c9369299",
         "latitude": 37.783899357084934,
         "longitude": -122.40844488143921,
-        "name": "Powell St BART Station (Market St at 5th St)",
+        "name": "Test Powell St BART Station (Market St at 5th St)",
         "timestamp": "2020-03-30T05:28:36.471000Z"
       },
       {
@@ -5515,7 +5515,7 @@
         "id": "b7c325ae70049e4e6f5a3564ec2697fe",
         "latitude": 37.7719511,
         "longitude": -122.4537048,
-        "name": "Fell St at Stanyan St",
+        "name": "Test Fell St at Stanyan St",
         "timestamp": "2020-03-30T05:28:35.674000Z"
       },
       {
@@ -5531,7 +5531,7 @@
         "id": "0ff3bf339e08df67475b40f9ea275674",
         "latitude": 37.78655306258097,
         "longitude": -122.39960700273514,
-        "name": "Natoma St at New Montgomery St",
+        "name": "Test Natoma St at New Montgomery St",
         "timestamp": "2020-03-30T05:28:35.394000Z"
       },
       {
@@ -6491,7 +6491,7 @@
         "id": "7a10659bcb8e88d97a98531df0dcd2be",
         "latitude": 37.79080303242391,
         "longitude": -122.43259012699126,
-        "name": "Webster St at Clay St",
+        "name": "Test Webster St at Clay St",
         "timestamp": "2020-03-30T05:28:35.605000Z"
       },
       {
