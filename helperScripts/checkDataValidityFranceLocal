@@ -1,0 +1,18 @@
+import scala.collection.JavaConversions._
+import spark.sqlContext.implicits._
+import org.apache.spark.sql.types._
+
+val records = spark.read.parquet("file:///Users/in-digvijay.gunjal/twdu/TW-DU-3A/streaming-pipeline/data/date=2020-04-01")
+val jsons = spark.read.json(records.select(col("raw_payload")).as[String])
+val stationNames = jsons.select(col("payload.network.stations.name") as "stations")
+val uniqueNames = stationNames.collect().map(_.getList(0).toSet.size).toSet
+
+val stationTimestamps = jsons.select(col("metadata.message_id") as "message_id", explode(col("payload.network.stations.timestamp")) as "timestamp")
+val stationTimestampFormatted = stationTimestamps.select(col("message_id"), to_timestamp(col("timestamp")) as "timestamp")
+val minMax = stationTimestampFormatted.groupBy("message_id").agg(max("timestamp") as "max", min("timestamp") as "min")
+val differences = minMax.select((col("max").cast(LongType) - col("min").cast(LongType)) as "difference")
+val differencesGreaterThanTen = differences.filter(col("difference") > 10)
+
+println(if(uniqueNames.size > 1) "Names are not unique in stations (check uniqueNames)" else "Good to Go. Station Names are unique.")
+
+differencesGreaterThanTen.show()
