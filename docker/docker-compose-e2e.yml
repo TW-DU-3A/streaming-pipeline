@@ -64,7 +64,7 @@ services:
         - kafka
         - zookeeper-seed
         - webserver
-        - mock-server
+        - mockserver
       networks:
         - streaming-data-internal
       mem_limit: 700m  #700mb
@@ -75,7 +75,7 @@ services:
     depends_on:
       - zookeeper-seed
       - kafka
-      - station-sfo-test-producer
+#      - station-sfo-test-producer
     volumes:
       - ~/.ivy2:/root/.ivy2:rw
     command: ["./wait-for.sh", "zookeeper:2181", "-t", "30"]
@@ -85,8 +85,8 @@ services:
     mem_limit: 700m  #700mb
 
 
-  mock-server:
-    container_name: "mock-server"
+  mockserver:
+    container_name: "mockserver"
     build:
       context: ../docker/mock_server/
     restart: always
