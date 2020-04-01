@@ -31,3 +31,4 @@ target/
 metastore_db/
 
 *.log
+*.pyc

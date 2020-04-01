@@ -15,7 +15,6 @@ object StationApp {
         .option("startingOffsets", "latest")
         .load()
         .selectExpr("CAST(value AS STRING) as raw_payload")
-
   }
 
   def main(args: Array[String]): Unit = {
@@ -66,6 +65,5 @@ object StationApp {
       .option("path", outputLocation)
       .start()
       .awaitTermination()
-
   }
 }

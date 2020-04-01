@@ -1,4 +1,4 @@
-version: "3"
+version: "2.4"
 services:
   kafka:
     image: wurstmeister/kafka:0.10.0.1-2
@@ -12,6 +12,7 @@ services:
       - KAFKA_ADVERTISED_PORT=9092
     depends_on:
       - zookeeper
+    mem_limit: 700m  #700mb
 
   hadoop:
     image: sequenceiq/hadoop-docker:2.7.0
@@ -25,6 +26,10 @@ services:
       - "8042:8042"
       - "9000:9000"
       - "50010:50010"
+    #cpu_shares: 73   #max1024
+    #cpu_quota: 50000 #50%
+    mem_limit: 700m  #700mb
+    mem_reservation: 512m
 
   hadoop-seed:
     build:
@@ -41,6 +46,7 @@ services:
       - streaming-data-internal
     ports:
       - "2181:2181"
+    mem_limit: 700m  #700mb
 
   zookeeper-seed:
     build:
@@ -50,16 +56,17 @@ services:
     depends_on:
       - zookeeper
 
-
-  station-san-francisco-producer:
-    build:
-      context: ../CitibikeApiProducer
-      dockerfile: Dockerfile-station-san-francisco-e2e
-    depends_on:
-      - kafka
-      - zookeeper-seed
-    networks:
-      - streaming-data-internal
+  station-sfo-test-producer:
+      build:
+        context: ../CitibikeApiProducer
+        dockerfile: Dockerfile-station-sfo-test
+      depends_on:
+        - kafka
+        - zookeeper-seed
+        - webserver
+      networks:
+        - streaming-data-internal
+      mem_limit: 700m  #700mb
 
   station-consumer:
     build:
@@ -74,7 +81,7 @@ services:
     networks:
       - streaming-data-internal
     restart: on-failure
-
+    mem_limit: 700m  #700mb
 
   webserver:
     container_name: "webserver"
@@ -90,17 +97,16 @@ services:
     ports:
       - "8090:8080"
       - "588:587"
-      - "5000:5000"
+      - "8050:8050"
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s
       timeout: 30s
       retries: 3
+    networks:
+      - streaming-data-internal
     env_file:
       - config.env
-
-
-
 
 networks:
   streaming-data-internal:

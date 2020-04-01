@@ -1,7 +1,7 @@
 {
   "network": {
     "company": [
-      "Motivate International, Inc."
+      "Test Motivate International, Inc."
     ],
     "gbfs_href": "https://gbfs.fordgobike.com/gbfs/gbfs.json",
     "href": "/v2/networks/ford-gobike",
