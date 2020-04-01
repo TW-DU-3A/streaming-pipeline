@@ -94,6 +94,10 @@ services:
       - FERNET_KEY=1uU2E6EgdCmdHKebTZjQYvhCzqv8Q597vULxXJy-blE=
     volumes:
         - ${PWD}/airflow/dags:/usr/local/airflow/dags
+        - ~/.ivy2:/root/.ivy2:rw
+        - ${PWD}/airflow/plugins:/usr/local/airflow/plugins
+    depends_on:
+      - hadoop
     ports:
       - "8090:8080"
       - "588:587"
