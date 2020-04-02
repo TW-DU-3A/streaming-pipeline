@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+
 buildscript {
     repositories {
         mavenCentral()
@@ -63,25 +64,57 @@ test {
 
 task teste2e(type: Test) {
     description "Runs e2e test"
-//    finalizedBy(composeDown)
+    finalizedBy(composeDown)
 }
 
 
 teste2e.doFirst {
-    while(1) {
+    def dagName = "e2e"
+    def status = getDagStatus(dagName)
+    System.out.println("Dag Status received: ${status}")
+}
+
+def getDagStatus(dagName) {
+
+    def executionDate = submitDag(dagName)
+
+    while (1) {
         try {
-//            call_api("http://localhost:8090/admin/rest_api/api?api=unpause&dag_id=e2e")
-//            def resp_trigger  = call_api("http://localhost:8090/admin/rest_api/api?api=trigger_dag&dag_id=e2e")
-//            System.out.println("Get resp, breaking off")
-//            break;
+            def url = "http://localhost:8090/admin/rest_api/api?api=dag_state&dag_id=${dagName}&execution_date=${executionDate}"
+            def response = call_api(url)
+
+            def status = response.output.stdout
+            if (status.contains("success") || status.contains("failure")) {
+                return status
+            }
+
+            System.out.println("Waiting for status...")
+            Thread.sleep(1000)
         } catch (Exception ex) {
             Thread.sleep(1000)
-            System.out.println("Test Test")
         }
     }
 }
 
+def submitDag(dagName) {
+    while (1) {
+        try {
+            call_api("http://localhost:8090/admin/rest_api/api?api=unpause&dag_id=${dagName}")
+            def resp_trigger = call_api("http://localhost:8090/admin/rest_api/api?api=trigger_dag&dag_id=${dagName}")
+            def statusText = resp_trigger.output.stdout
+            def statusArray = statusText.split("manual__")
+            def executionDate = statusArray[1].split("\\+")[0]
+            return executionDate
+        } catch (Exception ex) {
+            Thread.sleep(1000)
+            println(ex)
+        }
+    }
+
+}
+
 def call_api(String url) {
+    println("Requesting ${url}")
     def req = new URL(url).openConnection()
     System.out.println("Status code: ${req.getResponseCode()}")
     def resp = new JsonSlurper().parseText(req.getInputStream().getText())
@@ -96,4 +129,5 @@ dockerCompose {
     waitForTcpPorts = false
     forceRecreate = true
     buildBeforeUp = true
+    removeOrphans = true
 }

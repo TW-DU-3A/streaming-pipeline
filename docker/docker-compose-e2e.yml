@@ -106,7 +106,6 @@ services:
       - FERNET_KEY=1uU2E6EgdCmdHKebTZjQYvhCzqv8Q597vULxXJy-blE=
     volumes:
         - ${PWD}/airflow/dags:/usr/local/airflow/dags
-        - ~/.ivy2:/root/.ivy2:rw
         - ${PWD}/airflow/plugins:/usr/local/airflow/plugins
     depends_on:
       - hadoop
@@ -119,17 +118,18 @@ services:
       retries: 3
     networks:
       - streaming-data-internal
+    mem_limit: 700m  #700mb
     env_file:
       - config.env
 
-  curlrequestor:
-    container_name: "curlrequestor"
-    build:
-      context: ./curlrequestor
-    depends_on:
-      - webserver
-    networks:
-      - streaming-data-internal
+#  curlrequestor:
+#    container_name: "curlrequestor"
+#    build:
+#      context: ./curlrequestor
+#    depends_on:
+#      - webserver
+#    networks:
+#      - streaming-data-internal
 
 networks:
   streaming-data-internal:
