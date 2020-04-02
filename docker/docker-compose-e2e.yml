@@ -64,7 +64,7 @@ services:
         - kafka
         - zookeeper-seed
         - webserver
-        - mockserver
+        - mock-server
       networks:
         - streaming-data-internal
       mem_limit: 700m  #700mb
@@ -85,8 +85,8 @@ services:
     mem_limit: 700m  #700mb
 
 
-  mockserver:
-    container_name: "mockserver"
+  mock-server:
+    container_name: "mock-server"
     build:
       context: ../docker/mock_server/
     restart: always
@@ -112,8 +112,6 @@ services:
       - hadoop
     ports:
       - "8090:8080"
-      - "588:587"
-      - "8050:8050"
     healthcheck:
       test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
       interval: 30s

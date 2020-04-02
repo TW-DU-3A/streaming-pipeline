@@ -1,3 +1,4 @@
+import groovy.json.JsonSlurper
 buildscript {
     repositories {
         mavenCentral()
@@ -7,6 +8,10 @@ buildscript {
     }
 }
 
+
+plugins {
+    id 'com.avast.gradle.docker-compose' version '0.7.1'
+}
 
 apply plugin: 'java'
 apply plugin: 'idea'
@@ -54,4 +59,41 @@ jacocoTestReport {
 
 test {
     finalizedBy jacocoTestReport
+}
+
+task teste2e(type: Test) {
+    description "Runs e2e test"
+//    finalizedBy(composeDown)
+}
+
+
+teste2e.doFirst {
+    while(1) {
+        try {
+//            call_api("http://localhost:8090/admin/rest_api/api?api=unpause&dag_id=e2e")
+//            def resp_trigger  = call_api("http://localhost:8090/admin/rest_api/api?api=trigger_dag&dag_id=e2e")
+//            System.out.println("Get resp, breaking off")
+//            break;
+        } catch (Exception ex) {
+            Thread.sleep(1000)
+            System.out.println("Test Test")
+        }
+    }
+}
+
+def call_api(String url) {
+    def req = new URL(url).openConnection()
+    System.out.println("Status code: ${req.getResponseCode()}")
+    def resp = new JsonSlurper().parseText(req.getInputStream().getText())
+    System.out.println("Response: ${resp}")
+    return resp
+
+}
+
+dockerCompose {
+    isRequiredBy(project.tasks.teste2e)
+    useComposeFiles = ['../docker/docker-compose-e2e.yml']
+    waitForTcpPorts = false
+    forceRecreate = true
+    buildBeforeUp = true
 }
