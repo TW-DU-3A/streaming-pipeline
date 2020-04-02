@@ -11,9 +11,3 @@ USER airflow
 
 ENV EXECUTOR Sequential
 HEALTHCHECK CMD "[ -f /usr/local/airflow/airflow-webserver.pid ]"
-
-#USER root
-#COPY ./script.sh /script.sh
-#RUN chmod +x /script.sh
-#ENTRYPOINT ["/script.sh"]
-#CMD ["true", "batman", "superman"]
