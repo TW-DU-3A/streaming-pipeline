@@ -11,7 +11,7 @@ buildscript {
 
 
 plugins {
-    id 'com.avast.gradle.docker-compose' version '0.10.9'
+    id 'com.avast.gradle.docker-compose' version '0.8.0'
 }
 
 apply plugin: 'java'
@@ -71,7 +71,13 @@ task teste2e(type: Test) {
 teste2e.doFirst {
     def dagName = "e2e"
     def status = getDagStatus(dagName)
-    System.out.println("Dag Status received: ${status}")
+    System.out.println("Attempt 1: Dag Status received: ${status}")
+    if (status.contains("failed")) {
+        Thread.sleep(60000)
+        status = getDagStatus(dagName)
+        System.out.println("Attempt 2: Dag Status received: ${status}")
+    }
+    System.out.println("Completed task")
 }
 
 def getDagStatus(dagName) {
@@ -89,7 +95,7 @@ def getDagStatus(dagName) {
             }
 
             System.out.println("Waiting for status...")
-            Thread.sleep(1000)
+            Thread.sleep(5000)
         } catch (Exception ex) {
             Thread.sleep(1000)
         }
@@ -106,7 +112,7 @@ def submitDag(dagName) {
             def executionDate = statusArray[1].split("\\+")[0]
             return executionDate
         } catch (Exception ex) {
-            Thread.sleep(1000)
+            Thread.sleep(5000)
             println(ex)
         }
     }
@@ -126,8 +132,7 @@ def call_api(String url) {
 dockerCompose {
     isRequiredBy(project.tasks.teste2e)
     useComposeFiles = ['../docker/docker-compose-e2e.yml']
-    waitForTcpPorts = true
-    tcpPortsToIgnoreWhenWaiting = [8088]
+    waitForTcpPorts = false
     forceRecreate = true
     buildBeforeUp = true
     removeOrphans = true

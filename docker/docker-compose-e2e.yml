@@ -2,10 +2,12 @@ version: "2.4"
 services:
   kafka:
     image: wurstmeister/kafka:0.10.0.1-2
+    container_name: "kafka"
     networks:
       - streaming-data-internal
     ports:
       - "9092:9092"
+    restart: always
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_ADVERTISED_HOST_NAME=kafka
@@ -42,6 +44,7 @@ services:
 
   zookeeper:
     image: zookeeper:3.3.6
+    container_name: "zookeeper"
     networks:
       - streaming-data-internal
     ports:
