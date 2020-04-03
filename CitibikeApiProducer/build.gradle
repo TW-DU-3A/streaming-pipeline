@@ -70,19 +70,23 @@ task teste2e(type: Test) {
 
 teste2e.doFirst {
     def dagName = "e2e"
-    def status = getDagStatus(dagName)
+    def executionDate = submitDag(dagName)
+    def status = getDagStatus(dagName, executionDate)
     System.out.println("Attempt 1: Dag Status received: ${status}")
+
     if (status.contains("failed")) {
         Thread.sleep(60000)
-        status = getDagStatus(dagName)
+        executionDate = submitDag(dagName)
+        status = getDagStatus(dagName, executionDate)
         System.out.println("Attempt 2: Dag Status received: ${status}")
+    }
+    if (status.contains("failed")) {
+        throw new GradleException("E2E Test Failed")
     }
     System.out.println("Completed task")
 }
 
-def getDagStatus(dagName) {
-
-    def executionDate = submitDag(dagName)
+def getDagStatus(dagName, String executionDate) {
 
     while (1) {
         try {
