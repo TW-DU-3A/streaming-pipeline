@@ -1,0 +1,5 @@
+bikes_available,docks_available,is_renting,is_returning,last_updated,station_id,name,latitude,longitude
+8,3,true,true,1585546115,983514094dd808b1604da2dcfc2d09af,Fountain Alley at S 2nd St,37.33618830029063,-121.88927650451659
+17,8,true,true,1585546115,98cf498d2fa09046f98abeb6a9e902ff,Hubbell St at 16th St,37.766482696439496,-122.39827930927277
+12,15,true,true,1585546115,a730b0443ebed771ffc0c413ccc47eec,Bryant St at 2nd St,37.783171989315306,-122.39357203245163
+4,11,true,true,1585546115,d0e8f4f1834b7b33a3faf8882f567ab8,Harmon St at Adeline St,37.849735,-122.270582

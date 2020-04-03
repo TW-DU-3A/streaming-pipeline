@@ -11,7 +11,7 @@ buildscript {
 
 
 plugins {
-    id 'com.avast.gradle.docker-compose' version '0.7.1'
+    id 'com.avast.gradle.docker-compose' version '0.10.9'
 }
 
 apply plugin: 'java'
@@ -84,7 +84,7 @@ def getDagStatus(dagName) {
             def response = call_api(url)
 
             def status = response.output.stdout
-            if (status.contains("success") || status.contains("failure")) {
+            if (status.contains("success") || status.contains("failed")) {
                 return status
             }
 
@@ -126,7 +126,8 @@ def call_api(String url) {
 dockerCompose {
     isRequiredBy(project.tasks.teste2e)
     useComposeFiles = ['../docker/docker-compose-e2e.yml']
-    waitForTcpPorts = false
+    waitForTcpPorts = true
+    tcpPortsToIgnoreWhenWaiting = [8088]
     forceRecreate = true
     buildBeforeUp = true
     removeOrphans = true
