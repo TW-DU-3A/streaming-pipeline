@@ -59,9 +59,9 @@ object StationDataTransformation {
       .select($"status.*")
   }
 
-  implicit class StationDataStreamWriter(stream: DataStreamWriter[StationData]) {
+  implicit class StationDataStreamWriter(stream: DataStreamWriter[Row]) {
 
-    def createSink(mode: String, format: String, options: Map[String, String]): DataStreamWriter[StationData] = {
+    def createSink(mode: String, format: String, options: Map[String, String]): DataStreamWriter[Row] = {
       stream
         .outputMode(mode)
         .format(format)
