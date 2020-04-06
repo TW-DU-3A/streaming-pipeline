@@ -1,12 +1,14 @@
 package com.tw.apps
 
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
 import org.apache.spark.sql.catalyst.ScalaReflection
 import org.apache.spark.sql.expressions.UserDefinedFunction
 import org.apache.spark.sql.functions.{udf, _}
-import org.apache.spark.sql.{DataFrame, SparkSession}
+import org.apache.spark.sql.streaming.DataStreamWriter
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
 
 import scala.util.parsing.json.JSON
 
@@ -31,6 +33,7 @@ object StationDataTransformation {
           x("empty_slots").asInstanceOf[Double].toInt,
           x("extra").asInstanceOf[Map[String, Any]]("renting").asInstanceOf[Double] == 1,
           x("extra").asInstanceOf[Map[String, Any]]("returning").asInstanceOf[Double] == 1,
+          x("timestamp").asInstanceOf[Timestamp],
           Instant.from(DateTimeFormatter.ISO_INSTANT.parse(x("timestamp").asInstanceOf[String])).getEpochSecond,
           x("id").asInstanceOf[String],
           x("name").asInstanceOf[String],
@@ -54,5 +57,15 @@ object StationDataTransformation {
 
     jsonDF.select(from_json($"raw_payload", ScalaReflection.schemaFor[StationData].dataType) as "status")
       .select($"status.*")
+  }
+
+  implicit class StationDataStreamWriter(stream: DataStreamWriter[StationData]) {
+
+    def createSink(mode: String, format: String, options: Map[String, String]): DataStreamWriter[StationData] = {
+      stream
+        .outputMode(mode)
+        .format(format)
+        .options(options)
+    }
   }
 }

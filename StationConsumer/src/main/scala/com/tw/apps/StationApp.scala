@@ -3,7 +3,10 @@ package com.tw.apps
 import StationDataTransformation._
 import org.apache.curator.framework.CuratorFrameworkFactory
 import org.apache.curator.retry.ExponentialBackoffRetry
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.expressions.Window
+import org.apache.spark.sql.streaming.DataStreamWriter
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+import org.apache.spark.sql.functions._
 
 object StationApp {
 
@@ -42,28 +45,34 @@ object StationApp {
       .appName("StationConsumer")
       .getOrCreate()
 
-    import spark.implicits._
-
     val nycStationDF = getDataFromKafka(spark, stationKafkaBrokers, nycStationTopic)
       .transform(nycStationStatusJson2DF(_, spark))
 
     val sfStationDF = getDataFromKafka(spark, stationKafkaBrokers, sfStationTopic)
         .transform(sfStationStatusJson2DF(_, spark))
-
-    nycStationDF
+    val stationDF = nycStationDF
       .union(sfStationDF)
+
+    val writerOptions = Map(
+      ("checkpointLocation", checkpointLocation),
+      ("path", outputLocation),
+      ("truncate", "false"),
+      ("header", "true")
+    )
+
+    run(spark, stationDF, "complete",  "overwriteCSV", writerOptions)
+      .start()
+      .awaitTermination()
+  }
+
+  def run(spark: SparkSession, stationDF : DataFrame,outputMode : String,  format : String, writerOptions: Map[String, String]): DataStreamWriter[StationData] = {
+    import spark.implicits._
+    stationDF
       .as[StationData]
       .groupByKey(r=>r.station_id)
       .reduceGroups((r1,r2)=>if (r1.last_updated > r2.last_updated) r1 else r2)
       .map(_._2)
       .writeStream
-      .format("overwriteCSV")
-      .outputMode("complete")
-      .option("header", true)
-      .option("truncate", false)
-      .option("checkpointLocation", checkpointLocation)
-      .option("path", outputLocation)
-      .start()
-      .awaitTermination()
+      .createSink(outputMode, format, writerOptions)
   }
 }
