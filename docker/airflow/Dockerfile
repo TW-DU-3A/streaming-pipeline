@@ -5,6 +5,8 @@ FROM puckel/docker-airflow
 USER root
 
 RUN pip install hdfs
+RUN pip install pyarrow
+RUN pip install pandas -U
 RUN sed -i 's/LocalExecutor/SequentialExecutor/' /entrypoint.sh
 
 USER airflow

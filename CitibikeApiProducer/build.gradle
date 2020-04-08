@@ -69,6 +69,7 @@ task teste2e(type: Test) {
 
 
 teste2e.doFirst {
+    Thread.sleep(60000)
     def dagName = "e2e"
     def executionDate = submitDag(dagName)
     def status = getDagStatus(dagName, executionDate)

@@ -11,6 +11,13 @@ import glob
 import requests
 from io import StringIO
 from airflow.hooks.base_hook import BaseHook
+import pyarrow.parquet as pq
+from pandas._testing import assert_frame_equal
+
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', None)
+pd.set_option('display.max_colwidth', -1)
 
 sys.path.insert(0, os.path.abspath(os.path.dirname("api")))
 
@@ -45,13 +52,11 @@ def read_hdfs_file():
     print("downloading files from HDFS to " + pathname)
     myclient.download("/tw/stationMart/data/", pathname, True)
     print("downloading complete")
-    all_files = glob.glob(pathname + "/*.csv")
-    if len(all_files) > 0 and os.path.getsize(all_files[0]) > 0:
-        actual_df = pd.read_csv(all_files[0])
-        print(actual_df)
-        return actual_df
-    print("No files downloaded..")
-    return None
+    dataset = pq.ParquetDataset(pathname)
+    table = dataset.read()
+    df = table.to_pandas()
+    print(df)
+    return df
 
 
 def read_mock_data():
@@ -64,18 +69,22 @@ def read_mock_data():
     print("connecting to " + mockserver_conn)
     r = requests.get(mockserver_conn)
     StringData = StringIO(r.text)
-    df = pd.read_csv(StringData, sep=",")
+    df = pd.read_csv(StringData, sep=",", parse_dates=["timestamp"])
+    df["bikes_available"] = df["bikes_available"].astype("int32")
+    df["docks_available"] = df["docks_available"].astype("int32")
+    print(df)
     return df
 
 
 def compare_data(**kwargs):
     mock_df = read_mock_data()
+    print(mock_df.dtypes)
     actual_df = read_hdfs_file()
-    result = actual_df.equals(mock_df)
-    print("Result: " + str(result))
-    if not result:
-        raise ValueError('mart data did not match with reference data!')
-    return result
+    print(actual_df.dtypes)
+
+    print("asserting...")
+    assert_frame_equal(actual_df, mock_df, check_dtype=True)
+    return True
 
 
 comparison_task = PythonOperator(

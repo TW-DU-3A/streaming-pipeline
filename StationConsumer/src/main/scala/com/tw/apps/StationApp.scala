@@ -46,41 +46,55 @@ object StationApp {
       .appName("StationConsumer")
       .getOrCreate()
 
+    spark.conf.set("spark.sql.shuffle.partitions", "30")
+
     val nycStationDF = getDataFromKafka(spark, stationKafkaBrokers, nycStationTopic)
       .transform(nycStationStatusJson2DF(_, spark))
 
     val sfStationDF = getDataFromKafka(spark, stationKafkaBrokers, sfStationTopic)
       .transform(sfStationStatusJson2DF(_, spark))
+
     val stationDF = nycStationDF
       .union(sfStationDF)
 
     val writerOptions = Map(
       ("checkpointLocation", checkpointLocation),
-      ("path", outputLocation),
-      ("truncate", "false"),
-      ("header", "true")
+      ("path", outputLocation)
     )
 
-    run(spark, stationDF, "complete", "overwriteCSV", writerOptions)
+    run(spark, stationDF, "append", "parquet", writerOptions)
       .start()
       .awaitTermination()
   }
 
-  def run(spark: SparkSession, stationDF: DataFrame, outputMode: String, format: String, writerOptions: Map[String, String]): DataStreamWriter[Row] = {
+  def run(spark: SparkSession, stationDF: DataFrame, outputMode: String, format: String, writerOptions: Map[String, String]): DataStreamWriter[StationData] = {
     import spark.implicits._
-    stationDF
-      .withWatermark(("timestamp"), "15 minutes")
-      //.groupBy(col("station_id"))
-      //.agg(max(col("timestamp")))
+
+    val seconds = "5 minute"
+    val minutes = "10 minutes"
+
+    val df1 = stationDF
+      .withWatermark("timestamp", seconds)
+      .groupBy(
+        window($"timestamp", minutes),
+        $"station_id"
+      )
+      .agg(
+        last("timestamp").alias("timestamp"),
+        last("bikes_available").alias("bikes_available"),
+        last("docks_available").alias("docks_available"),
+        last("is_renting").alias("is_renting"),
+        last("is_returning").alias("is_returning"),
+        last("last_updated").alias("last_updated"),
+        last("name").alias("name"),
+        last("latitude").alias("latitude"),
+        last("longitude").alias("longitude")
+      )
+      .drop($"window")
       .as[StationData]
-      //.groupByKey(r => r.station_id)
-      //.reduceGroups((r1, r2) => if (r1.last_updated > r2.last_updated) r1 else r2)
-      //.map(_._2)
-      .withColumn("year", year(col("timestamp").cast(DateType)))
-      .withColumn("month", month(col("timestamp").cast(DateType)))
-      .withColumn("day", dayofmonth(col("timestamp").cast(DateType)))
+
+    df1
       .writeStream
       .createSink(outputMode, format, writerOptions)
-      .partitionBy("station_id", "year", "month", "day")
   }
 }

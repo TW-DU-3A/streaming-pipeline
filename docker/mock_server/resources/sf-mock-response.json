@@ -15,7 +15,7 @@
     "name": "Bay Wheels",
     "stations": [
       {
-        "empty_slots": 8,
+        "empty_slots": 3,
         "extra": {
           "address": null,
           "last_updated": 1585540115,
@@ -23,15 +23,15 @@
           "returning": 1,
           "uid": "345"
         },
-        "free_bikes": 17,
+        "free_bikes": 1,
         "id": "98cf498d2fa09046f98abeb6a9e902ff",
         "latitude": 37.766482696439496,
         "longitude": -122.39827930927277,
         "name": "Hubbell St at 16th St",
-        "timestamp": "2020-03-30T05:28:35.271000Z"
+        "timestamp": "2020-04-06T05:00:00.00000Z"
       },
       {
-        "empty_slots": 11,
+        "empty_slots": 8,
         "extra": {
           "address": null,
           "last_updated": 1585481526,
@@ -39,44 +39,76 @@
           "returning": 1,
           "uid": "340"
         },
-        "free_bikes": 4,
+        "free_bikes": 3,
         "id": "d0e8f4f1834b7b33a3faf8882f567ab8",
         "latitude": 37.849735,
         "longitude": -122.270582,
         "name": "Harmon St at Adeline St",
-        "timestamp": "2020-03-30T05:28:35.279000Z"
+        "timestamp": "2020-04-06T05:00:00.00000Z"
       },
       {
-        "empty_slots": 3,
+        "empty_slots": 11,
         "extra": {
           "address": null,
-          "last_updated": 1585534486,
+          "last_updated": 1585540115,
           "renting": 1,
           "returning": 1,
-          "uid": "341"
+          "uid": "345"
         },
-        "free_bikes": 8,
-        "id": "983514094dd808b1604da2dcfc2d09af",
-        "latitude": 37.33618830029063,
-        "longitude": -121.88927650451659,
-        "name": "Fountain Alley at S 2nd St",
-        "timestamp": "2020-03-30T05:28:35.280000Z"
+        "free_bikes": 5,
+        "id": "98cf498d2fa09046f98abeb6a9e902ff",
+        "latitude": 37.766482696439496,
+        "longitude": -122.39827930927277,
+        "name": "Hubbell St at 16th St",
+        "timestamp": "2020-04-06T05:03:00.00000Z"
       },
       {
-        "empty_slots": 15,
+        "empty_slots": 6,
         "extra": {
           "address": null,
-          "last_updated": 1585541751,
+          "last_updated": 1585481526,
           "renting": 1,
           "returning": 1,
-          "uid": "343"
+          "uid": "340"
         },
-        "free_bikes": 12,
-        "id": "a730b0443ebed771ffc0c413ccc47eec",
-        "latitude": 37.783171989315306,
-        "longitude": -122.39357203245163,
-        "name": "Bryant St at 2nd St",
-        "timestamp": "2020-03-30T05:28:35.283000Z"
+        "free_bikes": 1,
+        "id": "d0e8f4f1834b7b33a3faf8882f567ab8",
+        "latitude": 37.849735,
+        "longitude": -122.270582,
+        "name": "Harmon St at Adeline St",
+        "timestamp": "2020-04-06T05:14:00.00000Z"
+      },
+      {
+        "empty_slots": 2,
+        "extra": {
+          "address": null,
+          "last_updated": 1585540115,
+          "renting": 1,
+          "returning": 1,
+          "uid": "345"
+        },
+        "free_bikes": 6,
+        "id": "98cf498d2fa09046f98abeb6a9e902ff",
+        "latitude": 37.766482696439496,
+        "longitude": -122.39827930927277,
+        "name": "Hubbell St at 16th St",
+        "timestamp": "2020-04-06T05:10:00.00000Z"
+      },
+      {
+        "empty_slots": 0,
+        "extra": {
+          "address": null,
+          "last_updated": 1585481526,
+          "renting": 1,
+          "returning": 1,
+          "uid": "340"
+        },
+        "free_bikes": 10,
+        "id": "d0e8f4f1834b7b33a3faf8882f567ab8",
+        "latitude": 37.849735,
+        "longitude": -122.270582,
+        "name": "Harmon St at Adeline St",
+        "timestamp": "2020-04-06T05:26:00.00000Z"
       }
     ]
   }

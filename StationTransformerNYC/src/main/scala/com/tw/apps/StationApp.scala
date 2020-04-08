@@ -76,7 +76,6 @@ object StationApp {
       .groupByKey(r => r.station_id)
       .reduceGroups((r1, r2) => if (r1.timestamp.after(r2.timestamp)) r1 else r2)
       .map(_._2)
-      .drop("timestamp")
       .orderBy($"station_id")
 
     stationDataDF
